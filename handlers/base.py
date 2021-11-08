@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import pyrematch as re
+import re
 from slack_sdk import WebClient
 import os
 import pychromecast
@@ -20,8 +20,7 @@ class BaseHandler(ABC):
         return self.event['event']['type'] == 'message'
     
     def valid_message(self):
-        pattern = re.compile(self.pattern())
-        self.match = pattern.fullmatch(self.message())
+        self.match = re.match(self.pattern(), self.message())
         return bool(self.match)
 
     def pattern(self):

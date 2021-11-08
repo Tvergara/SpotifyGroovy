@@ -1,6 +1,5 @@
 flask
 slack_sdk
 python-dotenv
-pyrematch
 python-youtube
 pychromecast

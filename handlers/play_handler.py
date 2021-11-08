@@ -2,10 +2,10 @@ from handlers.base import BaseHandler
 
 class PlayHandler(BaseHandler):
     def pattern(self):
-        return '-p(lay)?\s!search{.*}'
+        return r'-p(lay)?\s(.*)$'
       
     def handle(self):
-        print(self.yt_search(self.match.group('search')))
+        print(self.yt_search(self.match.groups()[1]))
         self.acknowledge()
 
 
