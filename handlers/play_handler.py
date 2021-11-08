@@ -5,6 +5,10 @@ class PlayHandler(BaseHandler):
         return '-p(lay)?\s!search{.*}'
       
     def handle(self):
-        print('play')
-        print(self.match.group('search'))
-        self.acknoledge()
+        print(self.yt_search(self.match.group('search')))
+        self.acknowledge()
+
+
+    def yt_search(self, query):
+        result = self.yt_api.search_by_keywords(q=query, search_type='video', count=1, limit=1).items[0].id.videoId
+        return result
