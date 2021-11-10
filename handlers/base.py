@@ -7,11 +7,16 @@ from pychromecast.controllers.youtube import YouTubeController
 from pyyoutube import Api
 
 class BaseHandler(ABC):
+    slack = WebClient(os.getenv('SLACK_BOT_TOKEN'))
+    yt_api = Api(api_key=os.getenv('YT_API_KEY'))
+    chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[os.getenv('CHROMECAST_NAME')])
+    cast = chromecasts[0]
+    cast.wait()
+    yt = YouTubeController()
+    cast.register_handler(yt)
 
     def __init__(self, event):
         self.event = event
-        self.slack = WebClient(os.getenv('SLACK_BOT_TOKEN'))
-        self.yt_api = Api(api_key=os.getenv('YT_API_KEY'))
 
     def valid(self):
         return self.correct_medium() and self.valid_message()
@@ -42,4 +47,6 @@ class BaseHandler(ABC):
     def timestamp(self):
         return self.event['event']['ts']
 
-    
+    def yt_search(self, query):
+        result = self.yt_api.search_by_keywords(q=query, search_type='video', count=1, limit=1).items[0].id.videoId
+        return result
