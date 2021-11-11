@@ -6,5 +6,4 @@ class StopHandler(BaseHandler):
       
     def handle(self):
         self.cast.media_controller.stop()
-        self.acknowledge()
-
+        self.acknowledge('Stopping reproduction')

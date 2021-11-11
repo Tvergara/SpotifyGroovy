@@ -5,6 +5,6 @@ class PlayHandler(BaseHandler):
         return r'-p(lay)?\s(.*)$'
       
     def handle(self):
-        video_id = self.yt_search(self.match.group(2))
-        self.yt.play_video(video_id)
-        self.acknowledge()
+        video = self.yt_search(self.match.group(2))
+        self.yt.play_video(video.id.videoId)
+        self.acknowledge(f'Now playing: {video.snippet.title}')

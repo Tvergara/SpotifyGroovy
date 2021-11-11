@@ -23,10 +23,6 @@ class BaseHandler(ABC):
     def __init__(self, event):
         self.event = event
 
-    @abstractmethod
-    def info(self):
-        pass
-
     def valid(self):
         return self.correct_medium() and self.valid_message()
       
@@ -59,5 +55,5 @@ class BaseHandler(ABC):
         return self.event['event']['ts']
 
     def yt_search(self, query):
-        result = self.yt_api.search_by_keywords(q=query, search_type='video', count=1, limit=1).items[0].id.videoId
+        result = self.yt_api.search_by_keywords(q=query, search_type='video', count=1, limit=1).items[0]
         return result
