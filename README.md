@@ -11,11 +11,28 @@ First, you must install all dependencies.
 pip install -r requirements.txt
 ```
 
+To use in a development environment, you must install and set ```ngrok``` from [here](https://dashboard.ngrok.com/get-started/setup).
+
+To use in a production enviroment, you must install ```pagekite```. You can install it by:
+
+```curl -O https://pagekite.net/pk/pagekite.py ```
+
 ## Start
 
-You can simply run
+In development, you can use:
 ```bash
 FLASK_APP=main.py flask run
 ```
+And in another terminal, run:
+```bash
+cd ~
+./ngrok http 5000
+```
+Then set the ngrok url in the slack bot's event subscriptions url.
 
-And the app will listen on `localhost:5000`
+
+In production, you can simply run:
+
+```bash
+bash init.sh
+```
