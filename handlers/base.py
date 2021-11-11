@@ -9,14 +9,23 @@ from pyyoutube import Api
 class BaseHandler(ABC):
     slack = WebClient(os.getenv('SLACK_BOT_TOKEN'))
     yt_api = Api(api_key=os.getenv('YT_API_KEY'))
-    chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[os.getenv('CHROMECAST_NAME')])
-    cast = chromecasts[0]
+    while True:
+      try:
+        chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[os.getenv('CHROMECAST_NAME')])
+        cast = chromecasts[0]
+        break
+      except:
+        pass
     cast.wait()
     yt = YouTubeController()
     cast.register_handler(yt)
 
     def __init__(self, event):
         self.event = event
+
+    @abstractmethod
+    def info(self):
+        pass
 
     def valid(self):
         return self.correct_medium() and self.valid_message()
@@ -35,8 +44,10 @@ class BaseHandler(ABC):
     def handle(self):
         pass
     
-    def acknowledge(self):
+    def acknowledge(self, message=None):
         self.slack.reactions_add(channel=self.channel(), timestamp=self.timestamp(), name='musical_note')
+        if message:
+            self.slack.chat_postMessage(channel=self.channel(), text=message)
     
     def message(self):
         return self.event['event']['text']
