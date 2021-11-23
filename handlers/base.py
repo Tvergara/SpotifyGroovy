@@ -2,23 +2,9 @@ from abc import ABC, abstractmethod
 import re
 from slack_sdk import WebClient
 import os
-import pychromecast
-from pychromecast.controllers.youtube import YouTubeController
-from pyyoutube import Api
 
 class BaseHandler(ABC):
     slack = WebClient(os.getenv('SLACK_BOT_TOKEN'))
-    yt_api = Api(api_key=os.getenv('YT_API_KEY'))
-    while True:
-      try:
-        chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[os.getenv('CHROMECAST_NAME')])
-        cast = chromecasts[0]
-        break
-      except:
-        pass
-    cast.wait()
-    yt = YouTubeController()
-    cast.register_handler(yt)
 
     def __init__(self, event):
         self.event = event
@@ -53,7 +39,3 @@ class BaseHandler(ABC):
 
     def timestamp(self):
         return self.event['event']['ts']
-
-    def yt_search(self, query):
-        result = self.yt_api.search_by_keywords(q=query, search_type='video', count=1, limit=1).items[0]
-        return result
