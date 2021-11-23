@@ -1,5 +1,4 @@
 flask
 slack_sdk
 python-dotenv
-python-youtube
-pychromecast
+spotipy
