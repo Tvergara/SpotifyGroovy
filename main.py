@@ -4,8 +4,13 @@ from threading import Thread
 import json
 from dotenv import load_dotenv
 from handlers import *
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
+
+# spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
 
 app = Flask(__name__)
 VERIFICATION_TOKEN = os.getenv('VERIFICATION_TOKEN')
@@ -23,15 +28,20 @@ def event_hook():
             response_dict = {"challenge": event["challenge"]}
             return response_dict
         else:
+            spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
+            # spotify.pause_playback()
             for filename in os.listdir('./handlers'):
                 if filename.endswith('handler.py'):
                     # We obtain handler defined in the file
-                    handler = getattr(__import__('handlers.' + filename[:-3], fromlist=['handlers']),''.join(map(str.title, filename.split('.')[0].split('_'))))(event) 
+                    handler = getattr(__import__('handlers.' + filename[:-3], fromlist=['handlers']),''.join(map(str.title, filename.split('.')[0].split('_'))))(event, spotify) 
                     if handler.valid():
+                        # spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
+                        # spotify.pause_playback()
+
                         handler.handle()
 
 
-    return {"status": 500}
+    return {"status": 204}
 
 
 if __name__ == "__main__":

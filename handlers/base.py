@@ -6,8 +6,9 @@ import os
 class BaseHandler(ABC):
     slack = WebClient(os.getenv('SLACK_BOT_TOKEN'))
 
-    def __init__(self, event):
+    def __init__(self, event, spotify):
         self.event = event
+        self.spotify = spotify
 
     def valid(self):
         return self.correct_medium() and self.valid_message()
@@ -39,3 +40,11 @@ class BaseHandler(ABC):
 
     def timestamp(self):
         return self.event['event']['ts']
+
+    def spotify_search(self, query):
+        search = self.spotify.search(query, limit=1, type='track')['tracks']['items'][0]
+        url = search['href']
+        name = search['name']
+        artist = search['artists'][0]['name']
+
+        return url, name, artist

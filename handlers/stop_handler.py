@@ -5,4 +5,5 @@ class StopHandler(BaseHandler):
         return r'-stop(\s*)$'
       
     def handle(self):
+        self.spotify.pause_playback()
         self.acknowledge()

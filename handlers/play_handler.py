@@ -5,4 +5,8 @@ class PlayHandler(BaseHandler):
         return r'-p(lay)?\s(.*)$'
       
     def handle(self):
-        self.acknowledge()
+        query = self.match.group(2)
+        url, title, artist = self.spotify_search(query)
+        self.spotify.add_to_queue(url)
+
+        self.acknowledge(f":musical_note: Enqueued :headphones::     {title} from {artist}")
