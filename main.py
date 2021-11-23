@@ -10,13 +10,10 @@ from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
-# spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
-
 app = Flask(__name__)
 VERIFICATION_TOKEN = os.getenv('VERIFICATION_TOKEN')
 
 @app.route("/", methods=['POST'])
-
 def event_hook():
     event = json.loads(request.data.decode())
 
@@ -28,7 +25,7 @@ def event_hook():
             response_dict = {"challenge": event["challenge"]}
             return response_dict
         else:
-            spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
+            spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming', redirect_uri='http://localhost:3000'))
             # spotify.pause_playback()
             for filename in os.listdir('./handlers'):
                 if filename.endswith('handler.py'):
