@@ -10,6 +10,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
 import requests
 import time
+from threading import Thread
+import base64
 
 load_dotenv()
 
@@ -58,14 +60,11 @@ def event_hook():
             return response_dict
         else:
             spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming', redirect_uri='http://localhost:3000'))
-            # spotify.pause_playback()
             for filename in os.listdir('./handlers'):
                 if filename.endswith('handler.py'):
                     # We obtain handler defined in the file
                     handler = getattr(__import__('handlers.' + filename[:-3], fromlist=['handlers']),''.join(map(str.title, filename.split('.')[0].split('_'))))(event, spotify) 
                     if handler.valid():
-                        # spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope='streaming'))
-                        # spotify.pause_playback()
 
                         handler.handle()
 
@@ -73,5 +72,31 @@ def event_hook():
     return {"status": 204}
 
 
+def refresh_token():
+    while True:
+        time.sleep(3300)
+        with open('.cache', 'r') as f:
+            token = json.loads(f.read())
+        if int(time.time()) > token['expires_at']:
+            print('Refreshing token')
+        body = {}
+        refresh_token = token['refresh_token']
+        body['grant_type'] = 'refresh_token'
+        body['refresh_token'] = refresh_token
+        body['client_id'] = CLIENT_ID
+        auth = base64.b64encode(bytes(f'{CLIENT_ID}:{CLIENT_SECRET}', 'utf-8')).decode('utf-8')
+        headers = {'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + auth}
+        response = requests.post('https://accounts.spotify.com/api/token', data=body, headers=headers)
+        token = json.loads(response.text)
+        token['refresh_token'] = refresh_token
+        token['expires_at'] = int(time.time()) + token['expires_in']
+
+        with open('.cache', 'w') as f:
+            f.write(str(token).replace("'", '"'))
+
 if __name__ == "__main__":
+  refresh_thread = Thread(target=refresh_token)
+  refresh_thread.daemon = True
+  refresh_thread.start()
   app.run()
