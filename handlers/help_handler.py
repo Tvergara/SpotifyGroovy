@@ -10,7 +10,8 @@ class HelpHandler(BaseHandler):
     def handle(self):
         self.acknowledge('Los comandos disponibles son' +
                           '\n`-help`: se informa de todos los comandos disponibles' +
-                          '\n`-p alguna canción` o `-play alguna canción`: la canción se pasa al chromecast y se inicia una lista de reproducción' +
-                          '\n`-q alguna canción` o `-queue alguna canción`: la canción se encola a la lista de reproducción' +
+                          '\n`-p canción` o `-play canción`: la canción se encola en Spotify' +
+                          '\n`-p`: se reanuda la reproducción' +
+                          '\n`-skip`: Spotify saltea la canción actual' +
                           '\n`-stop`: detiene la lista de reproducción actual'
                         )
